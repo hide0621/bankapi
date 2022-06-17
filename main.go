@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+//DBの代わりにmapを用いて口座情報を持つ
 var accounts = map[float64]*bank.Account{}
 
 func main() {
@@ -20,10 +21,13 @@ func main() {
 		Number: 1001,
 	}
 
+	//「localhost:8000/statement」でハンドラ関数を実行
 	http.HandleFunc("/statement", statement)
+	//上記のハンドラ関数が実行されているエンドポイントでサーバーを起動
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
 }
 
+//ハンドラ関数の定義
 func statement(w http.ResponseWriter, req *http.Request) {
 	//リクエストのクエリパラメータに書かれた口座番号を左辺の変数（文字列型）に代入
 	numberqs := req.URL.Query().Get("number")
