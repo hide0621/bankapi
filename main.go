@@ -25,6 +25,8 @@ func main() {
 	http.HandleFunc("/statement", statement)
 	//「localhost:8000/deposit」でハンドラ関数を実行
 	http.HandleFunc("/deposit", deposit)
+	//「localhost:8000/withdraw」でハンドラ関数を実行
+	http.HandleFunc("/withdraw", withdraw)
 	//上記のハンドラ関数が実行されているエンドポイントでサーバーを起動
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
 }
@@ -79,6 +81,39 @@ func deposit(w http.ResponseWriter, req *http.Request) {
 			fmt.Fprintf(w, "Account with number %v can't be found!", number)
 		} else {
 			err := account.Deposit(amount)
+			if err != nil {
+				fmt.Fprintf(w, "%v", err)
+			} else {
+				fmt.Fprintf(w, "%v", account.Statement())
+			}
+		}
+	}
+}
+
+//ハンドラ関数の定義
+//引き出しに関する関数
+//例：http://localhost:8000/withdraw?number=1001&amount=100
+func withdraw(w http.ResponseWriter, req *http.Request) {
+
+	//リクエストのクエリパラメータに書かれた口座番号を左辺の変数（文字列型）に代入
+	numberqs := req.URL.Query().Get("number")
+	//リクエストのクエリパラメータに書かれた預金する金額を左辺の変数（文字列型）に代入
+	amountqs := req.URL.Query().Get("amount")
+
+	if numberqs == "" {
+		fmt.Fprintf(w, "%v", "Account number is missing!")
+	}
+
+	if number, err := strconv.ParseFloat(numberqs, 64); err != nil {
+		fmt.Fprintf(w, "%v", "Invalid account number!")
+	} else if amount, err := strconv.ParseFloat(amountqs, 64); err != nil {
+		fmt.Fprintf(w, "%v", "Invalid amount number!")
+	} else {
+		account, ok := accounts[number]
+		if !ok {
+			fmt.Fprintf(w, "Account with number %v can't be found!", number)
+		} else {
+			err := account.Withdraw(amount)
 			if err != nil {
 				fmt.Fprintf(w, "%v", err)
 			} else {
