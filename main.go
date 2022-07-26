@@ -186,7 +186,8 @@ func transfer(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-// Statement ...
+// 明細機能の実装
+//json形式で返す
 func (c *CustomAccount) Statement() string {
 	json, err := json.Marshal(c)
 	if err != nil {
