@@ -1,4 +1,3 @@
-// pushができるかテスト
 package main
 
 import (
